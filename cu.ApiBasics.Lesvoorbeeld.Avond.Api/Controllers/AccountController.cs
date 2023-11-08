@@ -71,7 +71,28 @@ namespace cu.ApiBasics.Lesvoorbeeld.Avond.Api.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterRequestDto registerRequestDto)
         {
-            return Ok();
+            //check modelstate
+            //create a new user
+            var applicationUser = new ApplicationUser 
+            {
+                UserName = registerRequestDto.Username,
+                Email = registerRequestDto.Username,
+                Firstname = registerRequestDto.Firstname,
+                Lastname = registerRequestDto.Lastname,
+            }; 
+            //add user role to user
+            var result = await _userManager.CreateAsync(applicationUser,registerRequestDto.Password);
+            if(!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+            //use _signinmanager to add new user
+            result = await _userManager.AddToRoleAsync(applicationUser, "User");
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+            return Ok("User created");
         }
     }
 }
