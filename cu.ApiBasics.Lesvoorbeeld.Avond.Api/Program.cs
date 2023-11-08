@@ -30,6 +30,7 @@ namespace Pri.Drinks.Api
             builder.Services.AddIdentity<ApplicationUser,IdentityRole>(
                 options =>
                 {
+                    //only for development/testing purposes
                     options.Password.RequiredUniqueChars = 0;
                     options.Password.RequireNonAlphanumeric = false;
                     options.Password.RequireDigit = false;
@@ -56,6 +57,13 @@ namespace Pri.Drinks.Api
                 ValidIssuer = builder.Configuration["JWTConfiguration:Issuer"],
                 RequireExpirationTime = true,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTConfiguration:SigninKey"]))
+            });
+            //add authorization policies
+            builder.Services.AddAuthorization(options =>
+            {
+                //define policies here
+                options.AddPolicy("Admin",policy => policy.RequireRole("Admin"));
+                options.AddPolicy("User",policy => policy.RequireRole("User"));
             });
             //register the repository service
             builder.Services.AddScoped<IProductRepository, ProductRepository>();

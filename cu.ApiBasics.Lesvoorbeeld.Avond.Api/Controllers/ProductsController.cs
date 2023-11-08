@@ -24,6 +24,7 @@ namespace cu.ApiBasics.Lesvoorbeeld.Avond.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetById(int id)
         {
             //get the product
@@ -44,7 +45,7 @@ namespace cu.ApiBasics.Lesvoorbeeld.Avond.Api.Controllers
             return Ok(productsResponseDto);
         }
         [HttpGet]
-        [Authorize(Roles = "User")]
+        [Authorize(Policy = "User")]
         public async Task<IActionResult> Get()
         {
             var products = await _productService.GetAllAsync();

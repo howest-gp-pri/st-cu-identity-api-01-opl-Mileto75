@@ -47,7 +47,7 @@ namespace cu.ApiBasics.Lesvoorbeeld.Avond.Api.Controllers
             //get the claims
             var claims = await _userManager.GetClaimsAsync(user);
             //add userId to claims
-            claims.Add(new Claim("UserId", user.Id));
+            claims.Add(new Claim(ClaimTypes.PrimarySid, user.Id));
             //add user roles to claims
             foreach (var role in userRoles)
             {
