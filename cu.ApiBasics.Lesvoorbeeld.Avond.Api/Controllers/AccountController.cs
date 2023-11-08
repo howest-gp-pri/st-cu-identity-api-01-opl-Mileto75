@@ -42,10 +42,17 @@ namespace cu.ApiBasics.Lesvoorbeeld.Avond.Api.Controllers
             }
             //get the user
             var user = await _userManager.FindByNameAsync(loginRequestDto.Username);
+            //get the user roles
+            var userRoles = await _userManager.GetRolesAsync(user);
             //get the claims
             var claims = await _userManager.GetClaimsAsync(user);
             //add userId to claims
             claims.Add(new Claim("UserId", user.Id));
+            //add user roles to claims
+            foreach (var role in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
             //generate token
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("JWTConfiguration:SigninKey")));
 
