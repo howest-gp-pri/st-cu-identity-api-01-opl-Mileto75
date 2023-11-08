@@ -42,17 +42,10 @@ namespace cu.ApiBasics.Lesvoorbeeld.Avond.Api.Controllers
             }
             //get the user
             var user = await _userManager.FindByNameAsync(loginRequestDto.Username);
-            //get the user roles
-            var userRoles = await _userManager.GetRolesAsync(user);
             //get the claims
             var claims = await _userManager.GetClaimsAsync(user);
             //add userId to claims
             claims.Add(new Claim(ClaimTypes.PrimarySid, user.Id));
-            //add user roles to claims
-            foreach (var role in userRoles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
             //generate token
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("JWTConfiguration:SigninKey")));
 
@@ -79,16 +72,18 @@ namespace cu.ApiBasics.Lesvoorbeeld.Avond.Api.Controllers
                 Email = registerRequestDto.Username,
                 Firstname = registerRequestDto.Firstname,
                 Lastname = registerRequestDto.Lastname,
-            }; 
-            //add user role to user
+            };
+            //use _signinmanager to add new user
             var result = await _userManager.CreateAsync(applicationUser,registerRequestDto.Password);
             if(!result.Succeeded)
             {
                 return BadRequest(result.Errors);
             }
-            //use _signinmanager to add new user
-            result = await _userManager.AddToRoleAsync(applicationUser, "User");
-            if (!result.Succeeded)
+            //add roleclaim to user
+            //create claim
+            var userRoleClaim = new Claim(ClaimTypes.Role, "User");
+            result = await _userManager.AddClaimAsync(applicationUser, userRoleClaim);
+            if(!result.Succeeded)
             {
                 return BadRequest(result.Errors);
             }

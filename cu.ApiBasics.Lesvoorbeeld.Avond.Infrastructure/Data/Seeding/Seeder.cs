@@ -86,21 +86,14 @@ namespace cu.ApiBasics.Lesvoorbeeld.Avond.Infrastructure.Data.Seeding
             };
             admin.PasswordHash = passwordHasher.HashPassword(admin, "Test123");
             user.PasswordHash = passwordHasher.HashPassword(user, "Test123");
-            //seed the roles
-            var roles = new IdentityRole<string>[]
-                {
-                    new IdentityRole<string>{Id = "1",Name = "Admin",NormalizedName = "ADMIN" },
-                    new IdentityRole<string>{Id = "2",Name = "User",NormalizedName = "USER" },
-                };
-            //link to users
-            var userRoles = new IdentityUserRole<string>[]
+            //seed the roles as claims and add to users
+            var userClaims = new IdentityUserClaim<string>[]
             {
-                new IdentityUserRole<string>{UserId = "1",RoleId="1" },
-                new IdentityUserRole<string>{UserId = "2",RoleId="2" },
+                new IdentityUserClaim<string>{Id = 1,UserId = "1",ClaimType = ClaimTypes.Role,ClaimValue = "Admin" },
+                new IdentityUserClaim<string>{Id = 2,UserId = "2",ClaimType = ClaimTypes.Role,ClaimValue = "User" },
             };
+            modelBuilder.Entity<IdentityUserClaim<string>>().HasData(userClaims);
             modelBuilder.Entity<ApplicationUser>().HasData( new ApplicationUser[] { admin, user } );
-            modelBuilder.Entity<IdentityRole>().HasData(roles);
-            modelBuilder.Entity<IdentityUserRole<string>>().HasData(userRoles);
         }
     }
 }
