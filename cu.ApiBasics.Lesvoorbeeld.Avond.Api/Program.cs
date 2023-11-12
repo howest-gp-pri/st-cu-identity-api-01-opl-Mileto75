@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Security.Claims;
 
 namespace Pri.Drinks.Api
 {
@@ -62,8 +63,21 @@ namespace Pri.Drinks.Api
             builder.Services.AddAuthorization(options =>
             {
                 //define policies here
-                options.AddPolicy("Admin",policy => policy.RequireRole("Admin"));
-                options.AddPolicy("User",policy => policy.RequireRole("User"));
+                options.AddPolicy("Admin", policy => policy.RequireClaim(ClaimTypes.Role, "Admin"));
+                options.AddPolicy("User",policy => policy.RequireAssertion(
+                    context =>
+                    {
+                        //perform needed checks
+                        //superadmin = User + Admin
+                        if (context.User.HasClaim(ClaimTypes.Role, "User")
+                        || context.User.HasClaim(ClaimTypes.Role, "Admin")
+                        ) 
+                        {
+                            return true;
+                        }
+                        return false;
+                    }
+                    ));
             });
             //register the repository service
             builder.Services.AddScoped<IProductRepository, ProductRepository>();

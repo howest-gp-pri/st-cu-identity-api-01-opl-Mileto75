@@ -1,5 +1,6 @@
 ﻿using cu.ApiBasics.Lesvoorbeeld.Avond.Api.DTOs.Account;
 using cu.ApiBAsics.Lesvoorbeeld.Avond.Core.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,6 @@ namespace cu.ApiBasics.Lesvoorbeeld.Avond.Api.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
-
 
         public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
